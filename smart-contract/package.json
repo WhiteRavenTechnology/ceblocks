@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "assert": "^2.0.0",
+    "dragonchain-sdk": "^4.2.0",
+    "uuid": "^3.3.3"
+  }
+}
