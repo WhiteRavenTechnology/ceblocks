@@ -12,7 +12,11 @@ module.exports = async input => {
 
     let output = await Reflect.apply(
       ceblocks[inputObj.payload.method],
-      inputObj.payload.parameters
+      ceblocks,
+      [
+        inputObj.header.txn_id,
+        inputObj.payload.parameters
+      ]
     );
 
     return output;
