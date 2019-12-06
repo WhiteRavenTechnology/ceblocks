@@ -10,20 +10,11 @@ module.exports = async input => {
   try {
     ceblocks.client = await dcsdk.createClient();
 
-    let output = null;
-
-    if (typeof inputObj.payload.methods !== "undefined")
-    {
-      // Multi-method transaction //
-      
-    } else {
-      // Single-method transaction //
-      output = await Reflect.apply(
-        ceblocks[inputObj.payload.method],
-        inputObj.payload.parameters
-      );
-    }
-
+    let output = await Reflect.apply(
+      ceblocks[inputObj.payload.method],
+      inputObj.payload.parameters
+    );
+    
     return output;
         
   } catch (exception)    

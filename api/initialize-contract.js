@@ -21,14 +21,16 @@ const initialize = async () => {
         }        
     })
 
+    console.log(util.inspect(requestTxn, false, null, true));
+
     // Wait for response to be written to a block //
     await sleep(6000);
 
-    const apiKeyMap = client.getSmartContractObject({key:`apiKeyMap`, smartContractId: config.contractId});
+    const apiKeyMap = await client.getSmartContractObject({key:`apiKeyMap`, smartContractId: config.contractId});
     
     // Display the authority custodian object //
     console.log(util.inspect(apiKeyMap, false, null, true));
 }
 
-initialize().then(() => {console.log("Done.")}).catch(err) {console.error(err)};
+initialize().then(() => {console.log("Done.")}).catch((err) => {console.error(err)});
 
