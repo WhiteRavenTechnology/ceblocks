@@ -1,4 +1,4 @@
-const sdk = require("dragonchain-sdk");
+const dcsdk = require("dragonchain-sdk");
 const ceblocks = require("./ceblocks");
 
 const log = (string) => console.error(`STDERR: ${string}`);
@@ -14,7 +14,7 @@ module.exports = async input => {
       ceblocks[inputObj.payload.method],
       inputObj.payload.parameters
     );
-    
+
     return output;
         
   } catch (exception)    
