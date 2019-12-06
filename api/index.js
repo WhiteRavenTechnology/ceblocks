@@ -4,7 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 
-const helper = require('./asset-tracker-api-helper');
+const helper = require('./ceblocks-helper');
 
 const app = express();
 
@@ -26,8 +26,8 @@ const main = async() => {
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: true }))
 
-	// Basic authentication middleware (obviously not the way to handle things in a production system...) //
-	app.use(function (req, res, next) {
+	// Basic authentication middleware //
+	app.use(async function (req, res, next) {
 			
 		// check for basic auth header
 		if (!req.headers.authorization || req.headers.authorization.indexOf('Basic ') === -1) {
@@ -37,73 +37,45 @@ const main = async() => {
 		// verify auth credentials
 		const base64Credentials =  req.headers.authorization.split(' ')[1];
 		const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
-		const [username, password] = credentials.split(':');
-		
-		// Seriously. Don't use this in a production system. //
-		const authenticatedCustodianId = (password == "mypassword") ? username : undefined;
+		const [username, apiKey] = credentials.split(':');
+        
+        const client = await dcsdk.createClient();
 
-		if (typeof authenticatedCustodianId === "undefined") 
-			return res.status(401).json({ message: 'Invalid Authentication Credentials' });		
-	
-		// attach user to request object
-		req.authenticatedCustodianId = authenticatedCustodianId
-		
+        const apiKeyMap = await helper.getAPIKeyMapObject(client);
+        
+        if (typeof apiKeyMap[username] === "undefined" || apiKeyMap[username] != apiKey)
+		    return res.status(401).json({ message: 'Invalid Authentication Credentials' });	
 		next();
 	})
 	
 	// Get all providers //
 	app.get('/providers', awaitHandlerFactory(async (req, res) => {
 		const client = await dcsdk.createClient();
+		
+		const providers = await helper.getProviders(client);
 
-		const authenticatedCustodian = await helper.getCurrentCustodianObject(client, {custodianId: req.authenticatedCustodianId});
+		const providerObjects = await Promise.all(providers.map(async p => {return await helper.getEntityObject(client, {entityId: p.id})}));
 
-		if (authenticatedCustodian.type != "authority")
-			throw "Only the authority custodian may do that.";
-
-		const custodians = await helper.getCustodians(client);
-
-		// This is a potentially dangerously long-running .map if there are many custodians (but a useful demonstration) //
-		// Note: I hear a rumor we may get an SDK method that'll pull a list of objects rather than one at a time //
-		// Full Disclosure: I just asked if they'd add it... Seriously: jump into Slack. DC devs are super nice dudes. //
-		const custodianObjects = await Promise.all(custodians.map(async c => {return await helper.getCurrentCustodianObject(client, {custodianId: c.id})}));
-
-		res.json(custodianObjects);
+        res.json(providerObjects);
 	}));	
 
-	// Get a specific custodian //
-	app.get('/custodians/:custodianId', awaitHandlerFactory(async (req, res) => {
+	// Get a specific provider //
+	app.get('/providers/:providerId', awaitHandlerFactory(async (req, res) => {
 		const client = await dcsdk.createClient();
 
-		const authenticatedCustodian = await helper.getCurrentCustodianObject(client, {custodianId: req.authenticatedCustodianId});
+		const provider = await helper.getEntityObject(client, {entityId: req.params.providerId});
 
-		if (authenticatedCustodian.type != "authority" && authenticatedCustodian.id != custodianId)
-			throw "Only the authority or the custodian may do that.";
-
-		const custodian = await helper.getCurrentCustodianObject(client, {custodianId: req.params.custodianId});
-
-		res.json(custodian);
+		res.json(provider);
 	}));	
 
 
-	// Create a new custodian //
-	app.post('/custodians', awaitHandlerFactory(async (req, res) => {
+	// Create a new provider //
+	app.post('/providers', awaitHandlerFactory(async (req, res) => {
 		const client = await dcsdk.createClient();
 
-		const authenticatedCustodian = await helper.getCurrentCustodianObject(client, {custodianId: req.authenticatedCustodianId});
+		let provider = req.body.provider;
 
-		if (authenticatedCustodian.type != "authority")
-			throw "Only the authority custodian may do that.";
-
-		let custodian = {			
-			"type": req.body.custodian.type
-		};
-
-		if (req.body.custodian.external_data)
-		{
-			custodian.external_data = req.body.custodian.external_data
-		}
-
-		const requestTxn = await helper.createCustodian(client, {custodian: custodian, authenticatedCustodian: authenticatedCustodian});
+		const requestTxn = await helper.createProvider(client, {provider: provider});
 
 		res.json(requestTxn);
 	}));

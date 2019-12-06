@@ -117,13 +117,53 @@ module.exports = {
         return output;
     },
 
-    // +++ API Key Management Methods +++ //
-    addMasterAPIKey: async function (requestTxnId, parameters) {
 
+    createCreditRecord: async function (requestTxnId, parameters)
+    {
+        const inCreditRecord = parameters.creditRecord;
+
+        const provider = await this.getEntityObject({entityId: inCreditRecord.providerId});
+        
+        const participant = await this.getEntityObject({entityId: inCreditRecord.participantId});
+
+        if (provider.id != participant.providerId)
+            throw "Invalid participant.";
+
+        if (!Array.isArray(inCreditRecord.creditJurisdictions) || inCreditRecord.creditJurisdictions.length == 0)
+            throw "At least one credit jurisdiction must be specified.";
+
+        inCreditRecord.id = requestTxnId;
+
+        for (let i = 0; i < inCreditRecord.creditJurisdictions.length; i++)
+        {
+            inCreditRecord.creditJurisdictions[i].id = uuid();
+        }
+        
+        const creditRecordKey = `creditRecord-${requestTxnId}`;
+
+        let creditRecordObject = {...inCreditRecord};
+
+        creditRecordObject.status = "valid";
+
+        const output = {
+            "response": {
+                "type": "createCreditRecord",
+                "creditRecord": inCreditRecord
+            },
+            [creditRecordKey]: creditRecordObject
+        };        
+
+        return output;
+    },
+
+
+    // +++ API Key Management Methods +++ //
+    addMasterAPIKey: async function (requestTxnId, parameters) 
+    {
         let apiKeyMap = null;
 
         try {
-            apiKeyMap = await this.getAPIKeyObject();
+            apiKeyMap = await this.getAPIKeyMapObject();
         } catch (exception) {
 
         }
@@ -141,7 +181,7 @@ module.exports = {
     },
 
     // +++ Helper Methods +++ //
-    getAPIKeyObject: async function () {
+    getAPIKeyMapObject: async function () {
         try {
             const objResponse = await this.client.getSmartContractObject({key:`apiKeyMap`})
 
@@ -171,5 +211,21 @@ module.exports = {
         {            
             throw exception
         }
-    }
+    },
+
+    getCreditRecordObject: async function (options) {
+        try {
+            const objResponse = await this.client.getSmartContractObject({key:`creditRecord-${options.creditRecordId}`})
+
+            const obj = JSON.parse(objResponse.response);
+            
+            if (obj.error)
+                throw "Credit Record Not Found: " + obj.error.details;
+
+            return obj;
+        } catch (exception)
+        {            
+            throw exception
+        }
+    },
 }

@@ -17,6 +17,9 @@ const test = {
         mint_points: require("./transfer/mint_points"),
         burn_points: require("./transfer/burn_points"),        
         transfer_points: require("./transfer/transfer_points")
+    },
+    creditRecord: {
+        create_credit_record: require("./creditRecord/create_credit_record")
     }
 };
 
@@ -126,6 +129,13 @@ ceblocks.client = {
 
     // Assert transfering (by burning) too many points from a PARTICIPANT fails //
     await assert.rejects(test.transfer.burn_points(ceblocks, {fromEntityId: participantNoMaxPointsPerRedemption.id, points: 1000000}));
+
+
+
+    // +++ CREDIT RECORD TESTS +++ //
+    result = await test.creditRecord.create_credit_record(ceblocks, {providerId: providerNoMaxPointsPerRedemption.id, participantId: participantNoMaxPointsPerRedemption.id});
+
+    assert.deepStrictEqual(result.actual, result.expected);
 
 
     console.log("Tests passed!");
