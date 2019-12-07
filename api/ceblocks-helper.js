@@ -266,6 +266,22 @@ const helper = {
         }
     },
 
+    getCreditRecordCertificateFileObject: async function (client, options) {
+        try {
+            const objResponse = await client.getSmartContractObject({key: options.creditRecordCertificateFileKey, smartContractId: config.contractId})
+
+            const obj = JSON.parse(objResponse.response);
+            
+            if (obj.error)
+                throw "Credit Record Certificate File Not Found: " + obj.error.details;
+
+            return obj;
+        } catch (exception)
+        {            
+            throw exception
+        }
+    },
+
     // +++ Utility +++ //
     sleep: (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));

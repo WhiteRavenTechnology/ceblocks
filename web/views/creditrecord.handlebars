@@ -46,10 +46,11 @@
                 <table class="table">
                     <thead class="thead-light">
                         <tr>
-                        <th scope="col">Jurisdiction</th>
-                        <th scope="col">Event ID</th>
-                        <th scope="col">Participant ID</th>
-                        <th scope="col">Credits Earned</th>
+                            <th scope="col">Jurisdiction</th>
+                            <th scope="col">Event ID</th>
+                            <th scope="col">Participant ID</th>
+                            <th scope="col">Credits Earned</th>
+                            <th scope="col"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -66,6 +67,11 @@
                                             </li>                                                
                                         {{/list}}
                                     </ul>
+                                </td>
+                                <td>
+                                    {{#if this.jurisdictionCertificateFileKey}}
+                                        <a href="/ProviderCertificate/{{this.jurisdictionCertificateFileKey}}" class="btn btn-info" target="_blank">Provider Certificate</a>
+                                    {{/if}}
                                 </td>
                             </tr>
                         {{/each}}

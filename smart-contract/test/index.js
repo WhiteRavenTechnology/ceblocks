@@ -11,7 +11,8 @@ const test = {
         create_provider_default_config: require("./entity/create_provider_default_config"),                    
         create_provider_specified_config: require("./entity/create_provider_specified_config"),                    
         create_participant_missing_data: require("./entity/create_participant_missing_data"),
-        create_participant: require("./entity/create_participant")
+        create_participant: require("./entity/create_participant"),
+        create_customer: require("./entity/create_customer"),
     },
     transfer: {
         mint_points: require("./transfer/mint_points"),
@@ -98,6 +99,14 @@ ceblocks.client = {
     assert.deepStrictEqual(result.actual, result.expected, "Create Participant 2");
 
     let participantHasMaxPointsPerRedemption = await ceblocks.getEntityObject({"entityId": result.requestTxnId});
+
+
+    // Assert customer created
+    result = await test.entity.create_customer(ceblocks);
+
+    assert.deepStrictEqual(result.actual, result.expected, "Create Customer");
+
+    let customer = await ceblocks.getEntityObject({"entityId": result.requestTxnId});
 
 
 

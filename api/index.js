@@ -1,6 +1,7 @@
 const util = require('util');
 const dcsdk = require('dragonchain-sdk');
 const express = require('express');
+const bodyParser = require('body-parser');
 const cors = require('cors');
 const helmet = require('helmet');
 
@@ -19,12 +20,12 @@ const main = async() => {
 		}
 	}
 
-	app.use(helmet());
+    app.use(helmet());
 
 	app.use(cors());
 
-	app.use(express.json());
-	app.use(express.urlencoded({ extended: true }))
+    app.use(bodyParser.urlencoded({ extended: true, limit:'10mb' }))
+    app.use(bodyParser.json({limit: '10mb'}));
 
 	// Basic authentication middleware //
 	app.use(async function (req, res, next) {
@@ -241,6 +242,15 @@ const main = async() => {
 
 		res.json(requestTxn);
     }));
+
+    // Get a certificate file's data //
+	app.get('/certificate-file/:creditRecordCertificateFileKey', awaitHandlerFactory(async (req, res) => {
+		const client = await dcsdk.createClient();
+
+        const creditRecordCertificateFileObj = await helper.getCreditRecordCertificateFileObject(client, {creditRecordCertificateFileKey: req.params.creditRecordCertificateFileKey});
+        
+		res.json({data: creditRecordCertificateFileObj});
+	}));
 
     
     // REDEEM points (provider-controlled, burns points for participant) //

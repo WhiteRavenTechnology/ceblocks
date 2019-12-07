@@ -71,6 +71,39 @@ module.exports = {
         return output;
     },
 
+    createCustomer: async function (requestTxnId, parameters)
+    {
+        const inCustomer = parameters.customer;
+
+        if (typeof inCustomer.email === "undefined" || inCustomer.email.trim() == "")
+            throw "Email address must be specified.";
+
+        if (typeof inCustomer.hashedPassword === "undefined" || inCustomer.hashedPassword.trim() == "")
+            throw "Hashed password must be specified.";
+
+        let entity = {
+            "id": requestTxnId,
+            "type": "customer",
+            "participantIds": [] // default
+        };
+
+        entity = {...entity, ...inCustomer};
+
+        // Force points to 0 (even if passed in parameters) //
+        entity.points = 0;
+
+        const entityKey = `entity-${requestTxnId}`;
+
+        let output = {
+            "response": {
+                "type": "createCustomer",
+                "entity": entity
+            },
+            [entityKey]: entity
+        }
+
+        return output;
+    },
     
     transferPoints: async function (requestTxnId, parameters)
     {

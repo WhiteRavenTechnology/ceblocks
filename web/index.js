@@ -85,6 +85,27 @@ const main = async() => {
 		res.redirect("/AddProvider");
 	}));
 
+	app.get('/ProviderCertificate/:creditRecordCertificateFileKey', awaitHandlerFactory(async (req, res) => {
+
+		const auth = Buffer.from("master:bca895c3-24c1-49dc-9885-59e0596109f7").toString("base64");
+
+		const creditRecordCertificateFileObj = await rp({
+			uri: `http://127.0.0.1:3030/certificate-file/${req.params.creditRecordCertificateFileKey}`,
+			headers: {
+				"Authorization": `Basic ${auth}`
+			},
+			json: true
+		});
+
+		var file = Buffer.from(creditRecordCertificateFileObj.data, 'base64');
+
+		res.writeHead(200, {
+		  'Content-Type': 'application/pdf',
+		  'Content-Length': file.length
+		});
+		res.end(file); 
+	}));
+
 	app.get('/CreditRecord/:creditRecordId', awaitHandlerFactory(async (req, res) => {
 
 		const auth = Buffer.from("master:bca895c3-24c1-49dc-9885-59e0596109f7").toString("base64");
