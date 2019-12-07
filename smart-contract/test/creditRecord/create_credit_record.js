@@ -33,8 +33,7 @@ module.exports = async function (ceblocks, options) {
             {
               "jurisdictionName": "Alabama Bar",
               "jurisdictionEventIdentifier": "os1234",
-              "jurisdictionCustomerIdentifier": "AB7890",
-              "jurisdictionCertificateFile": "d8f8usdg09we89ds908ds09g8...",
+              "jurisdictionCustomerIdentifier": "AB7890",              
               "creditsEarned": [
                 {"type": "general", "credits": 5.0},
                 {"type": "ethics", "credits": 1.0}

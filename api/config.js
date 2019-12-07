@@ -3,5 +3,5 @@ module.exports = {
     contractTxnType: "ceblocks",
 
     // This id should be set after deploying the contract in case certain helper methods are needed outside of the contract //
-    contractId: "c760f439-2642-4694-8b17-67438cac9ba5"
+    contractId: "a3e9f4c7-b288-40ff-8b41-70964ffbce9e"
 }

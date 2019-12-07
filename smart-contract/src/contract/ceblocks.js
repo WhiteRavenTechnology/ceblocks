@@ -17,7 +17,8 @@ module.exports = {
             "id": requestTxnId,
             "type": "provider",
             "maxPointsPerRedemption": null, // default
-            "creditToPointsMultiplier": 1.0 // default
+            "creditToPointsMultiplier": 1.0, // default
+            "addCreditRecordCallbackURL": null // default
         };
 
         entity = {...entity, ...inProvider};

@@ -1,0 +1,165 @@
+<div class="mt-5 mx-auto">
+    <h1 class="mb-5 text-center">Record of Continuing Education Earned</h1>
+
+    <table class="table">
+        <tr class="d-flex">
+            <th class="col-2">Activity Name</th>
+            <td class="col-10">{{creditRecord.eventName}}</td>
+        </tr>
+        <tr class="d-flex">
+            <th class="col-2">Activity Description</th>
+            <td class="col-10">{{creditRecord.eventDescription}}</td>
+        </tr>
+        <tr class="d-flex">
+            <th class="col-2">Activity Type</th>
+            <td class="col-10">{{creditRecord.eventType}}</td>
+        </tr>
+        <tr class="d-flex">
+            <th class="col-2">Activity Faculty</th>
+            <td class="col-10">
+                {{#list creditRecord.eventFaculty}}
+                    {{firstName}} {{middleName}} {{lastName}}{{#if lastNameSuffix}}, {{lastNameSuffix}} {{/if}} {{#if professionalTitle}} - {{professionalTitle}} {{/if}}<br>
+                {{/list}}
+            </td>
+        </tr>
+        <tr class="d-flex">
+            <th class="col-2">Provider Information</th>
+            <td class="col-10">
+                <div class="float-right col-4"><img class="img-fluid" src="{{provider.logoURL}}"></div>
+
+                <p><b>{{provider.name}}</b></p>
+                <p>{{provider.description}}</p>
+                <p><b>Web:</b> <a href="{{provider.websiteURL}}">{{provider.websiteURL}}</a></p>
+                <p><b>Email:</b> {{provider.email}}</p>
+                <p><b>Phone:</b> {{provider.phone}}</p>                    
+            </td>
+        </tr>
+        <tr class="d-flex">
+            <th class="col-2">Participant</th>
+            <td class="col-10">
+                {{creditRecord.participantDetails.firstName}} {{creditRecord.participantDetails.middleName}} {{creditRecord.participantDetails.lastName}}{{#if creditRecord.participantDetails.lastNameSuffix}}, {{creditRecord.participantDetails.lastNameSuffix}}{{/if}}
+            </td>
+        </tr>
+        <tr class="d-flex">
+            <th class="col-2">Credits Earned</th>
+            <td class="col-10">
+                <table class="table">
+                    <thead class="thead-light">
+                        <tr>
+                        <th scope="col">Jurisdiction</th>
+                        <th scope="col">Event ID</th>
+                        <th scope="col">Participant ID</th>
+                        <th scope="col">Credits Earned</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each creditRecord.creditJurisdictions}}
+                            <tr>
+                                <td>{{this.jurisdictionName}}</td>
+                                <td>{{this.jurisdictionEventIdentifier}}</td>
+                                <td>{{this.jurisdictionCustomerIdentifier}}</td>
+                                <td>
+                                    <ul>                                            
+                                        {{#list this.creditsEarned}}
+                                            <li>
+                                                <b>Type</b>: {{type}} - <b>Credits</b>: {{credits}}
+                                            </li>                                                
+                                        {{/list}}
+                                    </ul>
+                                </td>
+                            </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+                
+            </td>
+        </tr>
+        
+    </table>
+
+    <p class="text-center">
+        <a data-toggle="modal" data-target="#verificationsModal" href="#">View Cryptographic Verifications</a>        
+    </p>
+
+    <hr>
+
+    <div class="mt-5 mb-5">
+        <div class="card">
+            <h5 class="card-header">CEBlocks Info</h5>
+            <div class="card-body text-center">
+                <h4 class="card-title"><b>Are you {{creditRecord.participantDetails.firstName}} {{creditRecord.participantDetails.middleName}} {{creditRecord.participantDetails.lastName}}?</b> You earned <b><span class="text-success">{{creditRecord.pointTransfer.pointsAwarded}}</span> CEB Tokens</b>!</h4>
+
+                <p class="card-text">Use your points to save on your next <b>{{provider.name}}</b> purchase OR use them for discounts and deals with our <b>marketplace partners</b> like:</p>
+
+                <div class="row">
+                    <div class="col"></div>
+                    
+                    <div class="col">
+                        <a href="#"><img class="img-fluid" src="https://learn.mycase.com/www/v2/images/shared/mycase-logo.svg"></a>
+                    </div>
+                    
+                    <div class="col">
+                        <a href="#"><img class="img-fluid" src="https://www.levenger.com/images/M-2.png"></a>
+                    </div>
+                    
+                    <div class="col">
+                        <a href="#"><img class="img-fluid" src="https://d33wubrfki0l68.cloudfront.net/5c110b867b3829bf3be65497baf4673f40f0cc4b/60c40/images/svg-icons/lawpay_logo.svg"></a>
+                    </div>
+
+                    <div class="col"></div>
+                </div>
+
+                <p class="text-center"><a href="#" class="btn btn-primary">Learn More</a></p>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+<div class="modal fade" id="verificationsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Cryptographic Verifications</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <table id="verifications" class="table table-dark">
+              <thead>
+                  <tr>
+                      <th>Level</th>
+                      <th>Node ID</th>
+                      <th>Block ID</th>
+                      <th>Date</th>
+                  </tr>
+              </thead>
+              <tbody>                                  
+              </tbody>
+          </table>        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>        
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var verifications = {{{json verifications}}};
+
+        $.each (verifications, function (i, verificationLevel) {
+            $.each(verificationLevel, function (j, verification) {
+                $("#verifications tbody").append(
+                    $("<tr/>")
+                        .append($("<td/>").text(i))
+                        .append($("<td/>").text(verification.header.dc_id))
+                        .append($("<td/>").text(verification.header.block_id))                        
+                        .append($("<td/>").text(new Date(parseInt(verification.header.timestamp) * 1000).toString()))
+                )
+            })
+        })
+    })
+</script>
