@@ -33,7 +33,8 @@ module.exports = async function (ceblocks, options) {
             {
               "jurisdictionName": "Alabama Bar",
               "jurisdictionEventIdentifier": "os1234",
-              "jurisdictionCustomerIdentifier": "AB7890",              
+              "jurisdictionCustomerIdentifier": "AB7890",
+              "jurisdictionCertificateFile": "d8f8usdg09we89ds908ds09g8...",              
               "creditsEarned": [
                 {"type": "general", "credits": 5.0},
                 {"type": "ethics", "credits": 1.0}
@@ -47,6 +48,8 @@ module.exports = async function (ceblocks, options) {
     ceblocks.client.updateSmartContractHeap(result);
 
     const creditRecordKey = `creditRecord-${txnId}`;
+
+    const creditRecordCertificateFileKey = `creditRecordCertificateFile-${result.response.creditRecord.creditJurisdictions[0].id}`;
     
     return {
         "requestTxnId": txnId,        
@@ -83,7 +86,7 @@ module.exports = async function (ceblocks, options) {
                     "jurisdictionName": "Alabama Bar",
                     "jurisdictionEventIdentifier": "os1234",
                     "jurisdictionCustomerIdentifier": "AB7890",
-                    "jurisdictionCertificateFile": "d8f8usdg09we89ds908ds09g8...",
+                    "jurisdictionCertificateFileKey": creditRecordCertificateFileKey,                    
                     "creditsEarned": [
                       {"type": "general", "credits": 5.0},
                       {"type": "ethics", "credits": 1.0}
@@ -121,7 +124,7 @@ module.exports = async function (ceblocks, options) {
                   "jurisdictionName": "Alabama Bar",
                   "jurisdictionEventIdentifier": "os1234",
                   "jurisdictionCustomerIdentifier": "AB7890",
-                  "jurisdictionCertificateFile": "d8f8usdg09we89ds908ds09g8...",
+                  "jurisdictionCertificateFileKey": creditRecordCertificateFileKey,
                   "creditsEarned": [
                     {"type": "general", "credits": 5.0},
                     {"type": "ethics", "credits": 1.0}
@@ -129,7 +132,8 @@ module.exports = async function (ceblocks, options) {
                 }  
               ],
               "status": "valid"
-            }
+            },
+            [creditRecordCertificateFileKey]: "d8f8usdg09we89ds908ds09g8..."
         }
     };    
 }

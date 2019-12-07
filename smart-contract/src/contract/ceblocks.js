@@ -135,11 +135,27 @@ module.exports = {
 
         inCreditRecord.id = requestTxnId;
 
+        let certificateFiles = [];
+
         for (let i = 0; i < inCreditRecord.creditJurisdictions.length; i++)
         {
             inCreditRecord.creditJurisdictions[i].id = uuid();
+
+            // Create a separate heap object for each file, keyed with credit jurisdiction record id above, then unset from main object
+            if (typeof inCreditRecord.creditJurisdictions[i].jurisdictionCertificateFile !== "undefined")
+            {
+                certificateFiles.push(
+                    {
+                        key: `creditRecordCertificateFile-${inCreditRecord.creditJurisdictions[i].id}`,
+                        data: inCreditRecord.creditJurisdictions[i].jurisdictionCertificateFile
+                    }
+                );
+
+                delete inCreditRecord.creditJurisdictions[i].jurisdictionCertificateFile;
+                inCreditRecord.creditJurisdictions[i].jurisdictionCertificateFileKey = `creditRecordCertificateFile-${inCreditRecord.creditJurisdictions[i].id}`;
+            }
         }
-        
+
         const creditRecordKey = `creditRecord-${requestTxnId}`;
 
         let creditRecordObject = {...inCreditRecord};
@@ -153,6 +169,11 @@ module.exports = {
             },
             [creditRecordKey]: creditRecordObject
         };        
+
+        for (var i = 0; i < certificateFiles.length; i++)
+        {
+            output[certificateFiles[i].key] = certificateFiles[i].data;
+        }
 
         return output;
     },

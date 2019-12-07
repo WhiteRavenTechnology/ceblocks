@@ -159,8 +159,6 @@ const main = async() => {
 
         let creditRecord = req.body.creditRecord;
         
-        console.log(util.inspect(creditRecord, false, null, true));
-
         const provider = await helper.getEntityObject(client, {entityId: creditRecord.providerId});
 
         // Look up participant ID if available //
@@ -168,8 +166,6 @@ const main = async() => {
 
         try {
             participantTransactionRecord = await helper.findParticipantByIdentifier(client, {providerId: creditRecord.providerId, encryptedCustomerIdentifier: creditRecord.encryptedCustomerIdentifier});
-
-            console.log("Found participant");
 
             participantId = participantTransactionRecord.id;
 
@@ -183,8 +179,6 @@ const main = async() => {
             });
 
             participantId = newParticipantRequestTxn.response.transaction_id;
-
-            console.log(`Created participant: ${participantId}`);
 
             await helper.sleep(6000); // Make sure we wait for the block to be written before continuing //
         }
@@ -222,6 +216,10 @@ const main = async() => {
         
         const provider = await helper.getEntityObject(client, {entityId: creditRecord.providerId});
 
+        const participant = await helper.getEntityObject(client, {entityId: creditRecord.participantId});
+
+        creditRecord.encryptedCustomerIdentifier = participant.encryptedCustomerIdentifier;
+
         // Transfer the points //
         const points = creditRecord.eventCredits * provider.creditToPointsMultiplier;
 
@@ -242,7 +240,33 @@ const main = async() => {
 		const requestTxn = await helper.createCreditRecord(client, {creditRecord: creditRecord, callbackURL: provider.addCreditRecordCallbackURL});
 
 		res.json(requestTxn);
+    }));
+
+    
+    // REDEEM points (provider-controlled, burns points for participant) //
+	app.post('/redeem-points', awaitHandlerFactory(async (req, res) => {
+		const client = await dcsdk.createClient();
+
+        // Make sure provider owns participant record //
+        const participant = await helper.getEntityObject(client, {entityId: req.body.participantId});
+
+        if (participant.providerId != req.body.providerId)
+            throw "Invalid participant specified for redemption.";
+
+        if (req.body.points > participant.points)        
+            throw "The participant has an insufficient balance to redeem the specified amount.";
+        
+		const requestTxn = await helper.transferPoints(client, {            
+            pointTransfer: {
+                "fromEntityId": req.body.participantId,
+                "toEntityId": null, 
+                "points": req.body.points
+            }
+        });
+
+		res.json(requestTxn);
 	}));
+    
 
     // Get an object's Dragon Net verifications //
 	app.get('/verifications/:objectId', awaitHandlerFactory(async (req, res) => {

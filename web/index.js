@@ -41,6 +41,50 @@ const main = async() => {
 		res.render('index', {title: "CEBlocks", layout: "simple.handlebars"});
 	}));
 
+	app.get('/AddProvider', awaitHandlerFactory(async (req, res) => {
+		res.render('addprovider', {title: "Add a CEBlocks Provider"});
+	}));
+
+	app.post('/AddProvider', awaitHandlerFactory(async (req, res) => {
+		
+		const auth = Buffer.from("master:bca895c3-24c1-49dc-9885-59e0596109f7").toString("base64");
+
+		let industries = "";
+		for (var i=0; i < req.body.industries.length; i++)
+		{
+			industries += req.body.industries[i];
+
+			if (i < req.body.industries.length - 1)
+				industries += ",";
+		}
+
+		const options = {
+			method: 'POST',
+			uri: 'http://127.0.0.1:3030/providers/',
+			headers: {
+				"Authorization": `Basic ${auth}`
+			},
+			body: {
+				provider: {
+					"name": req.body.name,
+					"description": req.body.description,
+					"websiteURL": req.body.websiteURL,
+					"logoURL": req.body.logoURL,
+					"addCreditRecordCallbackURL": req.body.addCreditRecordCallbackURL,
+					"phone": req.body.phone,
+					"email": req.body.email,					
+					"creditToPointsMultiplier": req.body.creditToPointsMultiplier,
+					"industries": industries
+				}
+			},
+			json: true 
+		};
+		
+		const result = await rp(options);
+
+		res.redirect("/AddProvider");
+	}));
+
 	app.get('/CreditRecord/:creditRecordId', awaitHandlerFactory(async (req, res) => {
 
 		const auth = Buffer.from("master:bca895c3-24c1-49dc-9885-59e0596109f7").toString("base64");
@@ -91,7 +135,7 @@ const main = async() => {
     });
 
 	// In production (optionally) use port 80 or, if SSL available, use port 443 //
-	const server = app.listen(3015, '127.0.0.1', () => {
+	const server = app.listen(3015, () => {
 		console.log(`Express running → PORT ${server.address().port}`);
 	});
 }
