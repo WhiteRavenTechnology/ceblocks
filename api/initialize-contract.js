@@ -1,6 +1,10 @@
 const util = require('util');
 const dcsdk = require('dragonchain-sdk');
+const uuid = require('uuid/v4');
+
 const config = require('./config');
+
+const helper = require('./ceblocks-helper');
 
 const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -9,6 +13,7 @@ const sleep = (ms) => {
 const initialize = async () => {
     const client = await dcsdk.createClient();
 
+    const key = uuid();
     
     console.log("Creating master API key...");
 
@@ -17,7 +22,9 @@ const initialize = async () => {
         transactionType: config.contractTxnType,
         payload: {
             "method": "addMasterAPIKey",
-            "parameters": {}
+            "parameters": {
+                "key": helper.getHashedPassword(key)
+            }
         }        
     })
 
@@ -28,8 +35,7 @@ const initialize = async () => {
 
     const apiKeyMap = await client.getSmartContractObject({key:`apiKeyMap`, smartContractId: config.contractId});
     
-    // Display the authority custodian object //
-    console.log(util.inspect(apiKeyMap, false, null, true));
+    console.log(`Master API Key (ONLY DISPLAYED ONCE): ${key}`);
 }
 
 initialize().then(() => {console.log("Done.")}).catch((err) => {console.error(err)});

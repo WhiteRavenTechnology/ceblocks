@@ -251,7 +251,7 @@ module.exports = {
 
         let output = {
             "apiKeyMap": {
-                "master": requestTxnId
+                "master": parameters.key
             }
         }
 

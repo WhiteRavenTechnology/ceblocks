@@ -1,0 +1,27 @@
+<div class="mt-5 mx-auto">
+    <h1 class="mb-5 text-center">Create Your CEBlocks Account</h1>
+
+    <form class="form" method="post" action="/Register" autocomplete="off">
+        <p>
+            <label>Email Address</label>
+            <input type="email" class="form-control" id="email" name="email"/>            
+        </p>
+
+        <p>
+            <label>Password</label>
+            <input type="password" class="form-control" id="password" name="password"/>            
+        </p>
+
+        <p>
+            <label>Encrypted Access ID Supplied by Your Credit Provider</label>
+            <input type="password" class="form-control" id="encryptedCustomerIdentifier" name="encryptedCustomerIdentifier"/>            
+        </p>
+
+        <input type="hidden" name="creditRecordId" value="{{creditRecordId}}" />
+
+        <p>
+            <button type="submit" class="btn btn-primary">Create Account</button>
+        </p>
+    </form>
+    
+</div>

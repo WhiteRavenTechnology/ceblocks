@@ -38,14 +38,15 @@ const main = async() => {
 		// verify auth credentials
 		const base64Credentials =  req.headers.authorization.split(' ')[1];
 		const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
-		const [username, apiKey] = credentials.split(':');
+		const [username, secret] = credentials.split(':');
         
         const client = await dcsdk.createClient();
 
         const apiKeyMap = await helper.getAPIKeyMapObject(client);
         
-        if (typeof apiKeyMap[username] === "undefined" || apiKeyMap[username] != apiKey)
-		    return res.status(401).json({ message: 'Invalid Authentication Credentials' });	
+        if (typeof apiKeyMap[username] === "undefined" || apiKeyMap[username] != secret)
+            return res.status(401).json({ message: 'Invalid Authentication Credentials' });	
+            
 		next();
 	})
 	
@@ -131,8 +132,127 @@ const main = async() => {
 		const requestTxn = await helper.createParticipant(client, {participant: participant});
 
 		res.json(requestTxn);
+    }));
+
+    // Get all customers //
+	app.get('/customers', awaitHandlerFactory(async (req, res) => {
+		const client = await dcsdk.createClient();
+		
+		const customers = await helper.getCustomers(client);
+
+		const customerObjects = await Promise.all(customers.map(async c => {return await helper.getEntityObject(client, {entityId: c.id})}));
+
+        res.json(customerObjects);
+    }));
+    
+    // Get a customer's full details //
+    // +++ TODO: Secure this method with different auth credentials (JWT) to identify the actual user +++
+    app.get('/customers/details/:customerId', awaitHandlerFactory(async (req, res) => {
+		const client = await dcsdk.createClient();
+		
+        let customer = await helper.getEntityObject(client, {entityId: req.params.customerId});
+        
+        // Get all participant objects (SUPER SLOW) //
+        // +++ TODO: Replace with multi-object heap pull +++ //
+        customer.participants = await Promise.all(customer.participantIds.map(async p => {
+
+            let participant = await helper.getEntityObject(client, {entityId: p})
+
+            // Attach the PROVIDER object //
+            // +++ TODO: Separate from this map and pull by list of provider IDs when multi-pull available +++ //
+            participant.provider = await helper.getEntityObject(client, {entityId: participant.providerId});
+
+            return participant;
+        }));
+
+        // Get all credit records //
+        let entities = customer.participants.map(p => {return p.id}); //
+
+        const participantEntityList = entities.join("|");
+
+        //customer.creditRecords = 
+
+        // Get all point transfers (for any associated participants OR the customer ID itself)//    
+        entities.push(customer.id);
+        
+        const fullEntityList = entities.join("|");
+
+        customer.pointTransfers = await helper.getPointTransfers(client, {entityList: fullEntityList});
+
+        
+
+
+        res.json(customer);
+    }));
+
+    // Get a specific customer by email and hashed password //
+	app.post('/authenticateCustomer', awaitHandlerFactory(async (req, res) => {
+		const client = await dcsdk.createClient();
+
+		const customer = await helper.getCustomerObjectAuthenticated(client, {email: req.body.email, password: req.body.password});
+
+		res.json(customer);
+	}));
+    
+    // Create a new customer //
+	app.post('/customers', awaitHandlerFactory(async (req, res) => {
+		const client = await dcsdk.createClient();
+
+        let customer = req.body.customer;
+
+		const requestTxn = await helper.createCustomer(client, {customer: customer});
+
+		res.json(requestTxn);
 	}));
 
+    // Create a new customer/participant relationship //
+	app.post('/customers/participant', awaitHandlerFactory(async (req, res) => {
+		const client = await dcsdk.createClient();
+
+        let customerParticipantRelationship = req.body.customerParticipantRelationship;
+
+        const participant = await helper.getEntityObject(client, {entityId: customerParticipantRelationship.participantId})
+
+        if (participant.encryptedCustomerIdentifier != customerParticipantRelationship.encryptedCustomerIdentifier)
+            throw "Invalid encrypted access id.";
+
+		const requestTxn = await helper.createCustomerParticipantRelationship(client, {customerParticipantRelationship: customerParticipantRelationship});
+
+		res.json(requestTxn);
+    }));
+    
+    // Create a new customer AND create a participant relationship //
+	app.post('/customers/fromCreditRecord', awaitHandlerFactory(async (req, res) => {
+		const client = await dcsdk.createClient();
+
+        const creditRecord = await helper.getCreditRecordObject(client, {creditRecordId: req.body.creditRecordId});
+
+        if (creditRecord.encryptedCustomerIdentifier != req.body.encryptedCustomerIdentifier)
+            throw "Incorrect encrypted access id";
+
+        let customer = {
+            "email": req.body.email,
+            "hashedPassword": helper.getHashedPassword(req.body.password),
+            "firstName": creditRecord.participantDetails.firstName,
+            "middleName": creditRecord.participantDetails.middleName,
+            "lastName": creditRecord.participantDetails.lastName,
+            "lastNameSuffix": creditRecord.participantDetails.lastNameSuffix
+        };
+
+        const requestTxn = await helper.createCustomer(client, {customer: customer});
+        
+        await helper.sleep(6000); // Make sure we wait for the block to be written before continuing //
+
+        const customerParticipantRelationship = {            
+            "customerId": requestTxn.response.transaction_id,
+            "participantId": creditRecord.participantId,
+            "encryptedCustomerIdentifier": creditRecord.encryptedCustomerIdentifier            
+        };
+
+        const relRequestTxn = await helper.createCustomerParticipantRelationship(client, {customerParticipantRelationship: customerParticipantRelationship});
+
+		res.json(requestTxn);
+	}));
 
     // Get all credit records //
 	app.get('/credit-records', awaitHandlerFactory(async (req, res) => {
@@ -193,7 +313,8 @@ const main = async() => {
             pointTransfer: {
                 "fromEntityId": creditRecord.providerId, 
                 "toEntityId": creditRecord.participantId, 
-                "points": points
+                "points": points,
+                "memo": `Rewards earned from provider ${provider.name}`
             }
         });
 
@@ -260,6 +381,8 @@ const main = async() => {
         // Make sure provider owns participant record //
         const participant = await helper.getEntityObject(client, {entityId: req.body.participantId});
 
+        const provider = await helper.getEntityObject(client, {entityId: participant.providerId});
+
         if (participant.providerId != req.body.providerId)
             throw "Invalid participant specified for redemption.";
 
@@ -270,7 +393,8 @@ const main = async() => {
             pointTransfer: {
                 "fromEntityId": req.body.participantId,
                 "toEntityId": null, 
-                "points": req.body.points
+                "points": req.body.points,
+                "memo": `Redemption at provider ${provider.name}`
             }
         });
 
@@ -299,7 +423,6 @@ const main = async() => {
 		console.log(`Express running → PORT ${server.address().port}`);
 	});
 }
-
 
 main().then().catch(console.error)
 
