@@ -4,7 +4,7 @@ module.exports = async function (ceblocks, options) {
 
     const txnId = uuid();
     
-    const result = await ceblocks.addMasterAPIKey(txnId);
+    const result = await ceblocks.addMasterAPIKey(txnId, {key: "testkey"});
 
     ceblocks.client.updateSmartContractHeap(result);
 
@@ -13,7 +13,7 @@ module.exports = async function (ceblocks, options) {
         "actual": result,        
         "expected": {
             "apiKeyMap": {
-                "master": txnId
+                "master": "testkey"
             }
         }
     };    

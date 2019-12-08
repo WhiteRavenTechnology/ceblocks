@@ -5,7 +5,7 @@ const config = require('./config');
 
 // Escape a value for redisearch query purposes //
 const redisearchEncode = (value) => {
-    return value.replace(/([^A-Za-z\d_]+)/g, '\\$1');
+    return value.replace(/([^A-Za-z\d_|]+)/g, '\\$1');
 }
 
 // General helper for interacting with our Dragonchain node using the SDK client //
@@ -255,17 +255,25 @@ const helper = {
         }
     },
 
-    getPointTransfers: async (client, options) => {
-        try {
+    getPointTransferObjectsForEntities: async (client, options) => {
+        try {            
             const transactions = await client.queryTransactions({
                 transactionType: config.contractTxnType,
-                redisearchQuery: `@response_type:{transferPoints} (@transfer_points_from:{${options.entityList}}|@transfer_points_to:{${options.entityList}})`,
-                limit: 999999
+                redisearchQuery: `@response_type:{transferPoints} ((@transfer_points_from:{${redisearchEncode(options.entityList)}})|(@transfer_points_to:{${redisearchEncode(options.entityList)}}))`,
+                limit: 999999,
+                sortBy: 'timestamp',
+                sortAscending: true
             });
 
             if (transactions.response.results)
             {
-                return transactions.response.results.map(result => {return result.payload.response.pointTransfer});
+                return transactions.response.results.map(result => {
+                    let transfer = result.payload.response.pointTransfer;
+
+                    transfer.timestamp = result.header.timestamp;
+
+                    return transfer;
+                });
             } else 
                 return [];
         } catch (exception)

@@ -44,7 +44,7 @@ const main = async() => {
 
         const apiKeyMap = await helper.getAPIKeyMapObject(client);
         
-        if (typeof apiKeyMap[username] === "undefined" || apiKeyMap[username] != secret)
+        if (typeof apiKeyMap[username] === "undefined" || !helper.validateHashedPassword(secret, apiKeyMap[username]))
             return res.status(401).json({ message: 'Invalid Authentication Credentials' });	
             
 		next();
@@ -162,22 +162,21 @@ const main = async() => {
             // +++ TODO: Separate from this map and pull by list of provider IDs when multi-pull available +++ //
             participant.provider = await helper.getEntityObject(client, {entityId: participant.providerId});
 
+            // Attach all credit record objects // 
+            // +++ TODO: Separate this, too! +++
+            participant.creditRecords = await Promise.all(participant.creditRecordIds.map(async c => {return await helper.getCreditRecordObject(client, {creditRecordId: c})}));
+
             return participant;
         }));
 
-        // Get all credit records //
-        let entities = customer.participants.map(p => {return p.id}); //
+        // Get all point transfers  //
+        let entities = customer.participants.map(p => {return p.id}); 
 
-        const participantEntityList = entities.join("|");
-
-        //customer.creditRecords = 
-
-        // Get all point transfers (for any associated participants OR the customer ID itself)//    
         entities.push(customer.id);
         
         const fullEntityList = entities.join("|");
 
-        customer.pointTransfers = await helper.getPointTransfers(client, {entityList: fullEntityList});
+        customer.pointTransfers = await helper.getPointTransferObjectsForEntities(client, {entityList: fullEntityList});
 
         
 

@@ -51,11 +51,12 @@ module.exports = {
 
         let entity = {
             "id": requestTxnId,
-            "type": "participant"            
+            "type": "participant"
         };
 
         entity = {...entity, ...inParticipant};
 
+        entity.creditRecordIds = [];
         entity.points = 0;
 
         const entityKey = `entity-${requestTxnId}`;
@@ -218,12 +219,17 @@ module.exports = {
 
         creditRecordObject.status = "valid";
 
+        const participantKey = `entity-${participant.id}`;
+
+        participant.creditRecordIds.push(requestTxnId);
+
         const output = {
             "response": {
                 "type": "createCreditRecord",
                 "creditRecord": inCreditRecord
             },
-            [creditRecordKey]: creditRecordObject
+            [creditRecordKey]: creditRecordObject,
+            [participantKey]: participant
         };        
 
         for (var i = 0; i < certificateFiles.length; i++)

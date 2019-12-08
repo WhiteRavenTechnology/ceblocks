@@ -4,6 +4,8 @@ module.exports = async function (ceblocks, options) {
 
     const txnId = uuid();
     
+    const participant = {...await ceblocks.getEntityObject({entityId: options.participantId})};
+
     const result = await ceblocks.createCreditRecord(
       txnId,     
       {
@@ -51,6 +53,10 @@ module.exports = async function (ceblocks, options) {
 
     const creditRecordCertificateFileKey = `creditRecordCertificateFile-${result.response.creditRecord.creditJurisdictions[0].id}`;
     
+    const participantKey = `entity-${options.participantId}`;
+
+    participant.creditRecordIds.push(txnId);
+
     return {
         "requestTxnId": txnId,        
         "actual": result,        
@@ -133,7 +139,8 @@ module.exports = async function (ceblocks, options) {
               ],
               "status": "valid"
             },
-            [creditRecordCertificateFileKey]: "d8f8usdg09we89ds908ds09g8..."
+            [creditRecordCertificateFileKey]: "d8f8usdg09we89ds908ds09g8...",
+            [participantKey]: participant
         }
     };    
 }

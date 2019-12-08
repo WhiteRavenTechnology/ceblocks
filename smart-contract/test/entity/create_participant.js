@@ -29,6 +29,7 @@ module.exports = async function (ceblocks, options) {
                 "type": "participant",
                 "providerId": options.providerId,
                 "encryptedCustomerIdentifier": options.encryptedCustomerIdentifier,
+                "creditRecordIds": [],
                 "points": 0
               }
             },
@@ -37,6 +38,7 @@ module.exports = async function (ceblocks, options) {
               "type": "participant",
               "providerId": options.providerId,
               "encryptedCustomerIdentifier": options.encryptedCustomerIdentifier,
+              "creditRecordIds": [],
               "points": 0
             }
         }
