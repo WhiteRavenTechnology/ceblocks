@@ -4,7 +4,10 @@ const uuidv4 = require("uuid/v4");
 const salt = uuidv4();
 
 const config = {
-	"salt": salt 
+    "salt": salt,
+    "apiURL": "http://127.0.0.1:3030",
+    "apiId": "master",
+    "apiKey": ""
 }
 
 fs.writeFile('config.json', JSON.stringify(config), (err) => {    

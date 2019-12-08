@@ -7,6 +7,11 @@ const cryptojs = require('crypto-js');
 const app = express();
 app.use(cookieParser());
 
+// Utility
+const sleep = (ms) => {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const main = async() => {
 	const awaitHandlerFactory = (middleware) => {
 		return async (req, res, next) => {
@@ -80,11 +85,48 @@ const main = async() => {
 		
 		const result = await rp(options);
 
-		res.redirect("/AddProvider");
+		await sleep(6);
+
+		res.redirect(`/Provider/${result.response.transaction_id}`);
+	}));
+
+	app.get('/AddPartner', awaitHandlerFactory(async (req, res) => {
+		res.render('addpartner', {title: "Add a CEBlocks Partner"});
+	}));
+
+	app.post('/AddPartner', awaitHandlerFactory(async (req, res) => {
+		
+		let industries = req.body.industries.join(",");
+
+		const options = {
+			method: 'POST',
+			uri: `${config.apiURL}/partners/`,
+			headers: {
+				"Authorization": `Basic ${config.auth}`
+			},
+			body: {
+				partner: {
+					"name": req.body.name,
+					"description": req.body.description,
+					"websiteURL": req.body.websiteURL,
+					"logoURL": req.body.logoURL,
+					"phone": req.body.phone,
+					"email": req.body.email,										
+					"industries": industries
+				}
+			},
+			json: true 
+		};
+		
+		const result = await rp(options);
+
+		await sleep(6);
+
+		res.redirect(`/Partner/${result.response.transaction_id}`);
 	}));
 
 	app.get('/Dashboard/', awaitHandlerFactory(async (req, res) => {	
-		
+
 		const customerId = cryptojs.AES.decrypt(req.cookies.customerId, config.salt).toString(cryptojs.enc.Utf8);
 		
 		const options = {
@@ -96,8 +138,25 @@ const main = async() => {
 			json: true 
 		};
 		
+		const customer = await rp(options);
 
-		res.render('dashboard', {title: "CEBlocks Dashboard"});
+		tokenBalance = customer.points;
+
+		creditRecords = [];
+
+		for (var i=0; i < customer.participants.length; i++)
+		{
+			tokenBalance += customer.participants[i].points;
+
+			for (var j=0; j < customer.participants[i].creditRecords.length; j++)
+			{
+				customer.participants[i].creditRecords[j].providerName = customer.participants[i].provider.name;
+				creditRecords.push(customer.participants[i].creditRecords[j]);
+			}
+			
+		}
+
+		res.render('dashboard', {title: "CEBlocks Dashboard", customer: customer, tokenBalance: tokenBalance, creditRecords: creditRecords});
 	}));
 
 	app.get('/Login/', awaitHandlerFactory(async (req, res) => {		
@@ -205,7 +264,35 @@ const main = async() => {
 			json: true
 		});	
 
-		res.render('creditrecord', {title: "CEBlocks Record of Credit Earned", layout: "simple.handlebars", creditRecord: creditRecord, provider: provider, participant: participant, verifications: verifications});
+		const showCEBInfo = (typeof req.query.c === "undefined" && req.query.c != "true");
+
+		res.render('creditrecord', {title: "CEBlocks Record of Credit Earned", layout: "simple.handlebars", creditRecord: creditRecord, provider: provider, participant: participant, verifications: verifications, showCEBInfo: showCEBInfo});
+	}));
+
+	app.get('/Provider/:providerId', awaitHandlerFactory(async (req, res) => {
+
+		const provider = await rp({
+			uri: `${config.apiURL}/providers/${req.params.providerId}`,
+			headers: {
+				"Authorization": `Basic ${config.auth}`
+			},
+			json: true
+		});		
+
+		res.render('provider', {title: "CEBlocks Provider", layout: "simple.handlebars", provider: provider});
+	}));
+
+	app.get('/Partner/:partnerId', awaitHandlerFactory(async (req, res) => {
+
+		const partner = await rp({
+			uri: `${config.apiURL}/partners/${req.params.providerId}`,
+			headers: {
+				"Authorization": `Basic ${config.auth}`
+			},
+			json: true
+		});		
+
+		res.render('partner', {title: "CEBlocks Partner", layout: "simple.handlebars", partner: partner});
 	}));
 
     app.use(function (err, req, res, next) {
@@ -223,6 +310,5 @@ const main = async() => {
 		console.log(`Express running → PORT ${server.address().port}`);
 	});
 }
-
 
 main().then().catch(console.error)

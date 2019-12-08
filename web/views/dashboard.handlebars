@@ -1,3 +1,101 @@
-<div class="mt-5 mx-auto text-center">
-    <h1>CEBlocks Dashboard</h1>
+<div class="mt-5 mx-auto">
+    <h1 class="text-center mb-5"><b>Welcome {{customer.firstName}} {{customer.middleName}} {{customer.lastName}}{{#if customer.lastNameSuffix}}, {{customer.lastNameSuffix}}{{/if}}</b></h1>
+    
+    <div class="text-center">
+        <h2 class="mb-3">CEB Token Balance: <b><span class="text-success">{{tokenBalance}}</span></b></h2>
+
+        <p>
+            <a class="btn btn-primary btn-lg" href="#">Shop the Marketplace</a>&nbsp;&nbsp;&nbsp;
+            <a class="btn btn-info btn-lg" data-toggle="modal" data-target="#transfersModal" href="#">See Transaction History</a></p>
+        </p>
+
+    </div>
+
+    <div class="mt-5">
+        <h2 class="text-center">Your Credit Records</h2>
+
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">Provider</th>
+                    <th scope="col">Event Name</th>
+                    <th scope="col">Date Earned</th>                    
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each creditRecords}}
+                    <tr>
+                        <td>{{this.providerName}}</td>
+                        <td>{{this.eventName}}</td>
+                        <td><span class="timestamp">{{this.timestampCreditEarned}}</span></td>                        
+                        <td>                            
+                            <a href="/CreditRecord/{{this.id}}/?c=true" class="btn btn-info" target="_blank">View Record</a>                            
+                        </td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+
 </div>
+
+<div class="modal fade" id="transfersModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">CEBToken Transaction History</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <table id="transfers" class="table table-striped">
+              <thead class="thead-dark">
+                  <tr>
+                      <th>Type</th>
+                      <th>Amount</th>
+                      <th>Memo</th>
+                      <th>Date</th>
+                  </tr>
+              </thead>
+              <tbody>                                  
+              </tbody>
+          </table>        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>        
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $(".timestamp").each(function (i, elem) {
+            var date = new Date(parseInt($(elem).text()) * 1000).toLocaleDateString();
+
+            $(elem).text(date);
+        });
+
+        var transfers = {{{json customer.pointTransfers}}};
+
+        var participants = {{{json customer.participants}}};
+
+        var entityIds = ["{{customer.id}}"];
+
+        for (var i = 0; i < participants.length; i++)
+            entityIds.push(participants[i].id);
+
+        $.each (transfers, function (i, transfer) {            
+            $("#transfers tbody").append(
+                $("<tr/>")
+                    .append($("<td/>").text(entityIds.includes(transfer.toEntityId) ? "Credit" : "Debit"))
+                    .append($("<td/>").addClass("text-center").text(transfer.points.toFixed(2)))
+                    .append($("<td/>").text(transfer.memo))
+                    .append($("<td/>").text(new Date(parseInt(transfer.timestamp) * 1000).toString()))
+            )
+        })
+    })
+</script>

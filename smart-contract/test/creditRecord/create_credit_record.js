@@ -31,6 +31,7 @@ module.exports = async function (ceblocks, options) {
               "lastName": "Doe",
               "lastNameSuffix": "Esq."
           },
+          "timestampCreditEarned": 1575836641,
           "creditJurisdictions": [
             {
               "jurisdictionName": "Alabama Bar",
@@ -86,6 +87,7 @@ module.exports = async function (ceblocks, options) {
                     "lastName": "Doe",
                     "lastNameSuffix": "Esq."
                 },
+                "timestampCreditEarned": 1575836641,
                 "creditJurisdictions": [
                   {
                     "id": result.response.creditRecord.creditJurisdictions[0].id,
@@ -124,6 +126,7 @@ module.exports = async function (ceblocks, options) {
                   "lastName": "Doe",
                   "lastNameSuffix": "Esq."
               },
+              "timestampCreditEarned": 1575836641,
               "creditJurisdictions": [
                 {
                   "id": result.response.creditRecord.creditJurisdictions[0].id, // Can't anticipate the UUID assigned //

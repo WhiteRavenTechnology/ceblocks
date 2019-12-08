@@ -39,6 +39,37 @@ module.exports = {
         return output;
     },
 
+    createPartner: async function (requestTxnId, parameters)
+    {
+        const inPartner = parameters.partner;
+
+        if (typeof inPartner.name === "undefined" || inPartner.name.trim() == "")
+            throw "Partner name must be specified.";
+
+        let entity = {
+            "id": requestTxnId,
+            "type": "partner",
+            "maxPointsPerRedemption": null // default
+        };
+
+        entity = {...entity, ...inPartner};
+
+        // Force points to 0 (even if passed in parameters) //
+        entity.points = 0;
+
+        const entityKey = `entity-${requestTxnId}`;
+
+        let output = {
+            "response": {
+                "type": "createPartner",
+                "entity": entity
+            },
+            [entityKey]: entity
+        }
+
+        return output;
+    },
+
     createParticipant: async function (requestTxnId, parameters)
     {
         const inParticipant = parameters.participant;

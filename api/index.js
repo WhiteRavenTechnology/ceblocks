@@ -82,6 +82,38 @@ const main = async() => {
 		res.json(requestTxn);
     }));
 
+    // Get all partners //
+	app.get('/partners', awaitHandlerFactory(async (req, res) => {
+		const client = await dcsdk.createClient();
+		
+		const partners = await helper.getpartners(client);
+
+		const partnerObjects = await Promise.all(partners.map(async p => {return await helper.getEntityObject(client, {entityId: p.id})}));
+
+        res.json(partnerObjects);
+	}));	
+
+	// Get a specific partner //
+	app.get('/partners/:partnerId', awaitHandlerFactory(async (req, res) => {
+		const client = await dcsdk.createClient();
+
+		const partner = await helper.getEntityObject(client, {entityId: req.params.partnerId});
+
+		res.json(partner);
+	}));	
+
+
+	// Create a new partner //
+	app.post('/partners', awaitHandlerFactory(async (req, res) => {
+		const client = await dcsdk.createClient();
+
+		let partner = req.body.partner;
+
+		const requestTxn = await helper.createpartner(client, {partner: partner});
+
+		res.json(requestTxn);
+    }));
+
 
     // Get all participants //
 	app.get('/participants', awaitHandlerFactory(async (req, res) => {
@@ -177,9 +209,6 @@ const main = async() => {
         const fullEntityList = entities.join("|");
 
         customer.pointTransfers = await helper.getPointTransferObjectsForEntities(client, {entityList: fullEntityList});
-
-        
-
 
         res.json(customer);
     }));

@@ -13,7 +13,8 @@ const test = {
         create_participant_missing_data: require("./entity/create_participant_missing_data"),
         create_participant: require("./entity/create_participant"),
         create_customer: require("./entity/create_customer"),
-        create_customer_participant_relationship: require("./entity/create_customer_participant_relationship")
+        create_customer_participant_relationship: require("./entity/create_customer_participant_relationship"),
+        create_partner: require("./entity/create_partner")
     },
     transfer: {
         mint_points: require("./transfer/mint_points"),
@@ -83,6 +84,13 @@ ceblocks.client = {
     
     let providerHasMaxPointsPerRedemption = await ceblocks.getEntityObject({"entityId": result.requestTxnId});
     
+    // Assert provider created with minimum specified data //
+    result = await test.entity.create_partner(ceblocks);
+
+    assert.deepStrictEqual(result.actual, result.expected, "Create Partner");
+
+    let partner = await ceblocks.getEntityObject({"entityId": result.requestTxnId});
+
 
     // Assert creating participant with missing required data fails //
     await assert.rejects(test.entity.create_participant_missing_data(ceblocks, {providerId: providerNoMaxPointsPerRedemption.id}), "Create Participant: Missing Data");

@@ -41,6 +41,12 @@
             </td>
         </tr>
         <tr class="d-flex">
+            <th class="col-2">Date Credit Earned</th>
+            <td class="col-10">
+                <span class="timestamp">{{creditRecord.timestampCreditEarned}}</span>
+            </td>
+        </tr>
+        <tr class="d-flex">
             <th class="col-2">Credits Earned</th>
             <td class="col-10">
                 <table class="table">
@@ -89,36 +95,38 @@
 
     <hr>
 
-    <div class="mt-5 mb-5">
-        <div class="card">
-            <h5 class="card-header">CEBlocks Info</h5>
-            <div class="card-body text-center">
-                <h4 class="card-title"><b>Are you {{creditRecord.participantDetails.firstName}} {{creditRecord.participantDetails.middleName}} {{creditRecord.participantDetails.lastName}}?</b> You earned <b><span class="text-success">{{creditRecord.pointTransfer.pointsAwarded}}</span> CEB Tokens</b>!</h4>
+    {{#if showCEBInfo}}
+        <div class="mt-5 mb-5">
+            <div class="card">
+                <h5 class="card-header">CEBlocks Info</h5>
+                <div class="card-body text-center">
+                    <h4 class="card-title"><b>Are you {{creditRecord.participantDetails.firstName}} {{creditRecord.participantDetails.middleName}} {{creditRecord.participantDetails.lastName}}?</b> You earned <b><span class="text-success">{{creditRecord.pointTransfer.pointsAwarded}}</span> CEB Tokens</b>!</h4>
 
-                <p class="card-text">Use your points to save on your next <b>{{provider.name}}</b> purchase OR use them for discounts with our <b>marketplace partners</b> like:</p>
+                    <p class="card-text">Use your points to save on your next <b>{{provider.name}}</b> purchase OR use them for discounts with our <b>marketplace partners</b> like:</p>
 
-                <div class="row">
-                    <div class="col"></div>
-                    
-                    <div class="col">
-                        <a href="#"><img class="img-fluid" src="https://learn.mycase.com/www/v2/images/shared/mycase-logo.svg"></a>
-                    </div>
-                    
-                    <div class="col">
-                        <a href="#"><img class="img-fluid" src="https://www.levenger.com/images/M-2.png"></a>
-                    </div>
-                    
-                    <div class="col">
-                        <a href="#"><img class="img-fluid" src="https://d33wubrfki0l68.cloudfront.net/5c110b867b3829bf3be65497baf4673f40f0cc4b/60c40/images/svg-icons/lawpay_logo.svg"></a>
+                    <div class="row">
+                        <div class="col"></div>
+                        
+                        <div class="col">
+                            <a href="#"><img class="img-fluid" src="https://learn.mycase.com/www/v2/images/shared/mycase-logo.svg"></a>
+                        </div>
+                        
+                        <div class="col">
+                            <a href="#"><img class="img-fluid" src="https://www.levenger.com/images/M-2.png"></a>
+                        </div>
+                        
+                        <div class="col">
+                            <a href="#"><img class="img-fluid" src="https://d33wubrfki0l68.cloudfront.net/5c110b867b3829bf3be65497baf4673f40f0cc4b/60c40/images/svg-icons/lawpay_logo.svg"></a>
+                        </div>
+
+                        <div class="col"></div>
                     </div>
 
-                    <div class="col"></div>
+                    <p class="text-center"><a data-toggle="modal" data-target="#moreinfoModal" href="#" class="btn btn-primary">Learn More</a></p>
                 </div>
-
-                <p class="text-center"><a data-toggle="modal" data-target="#moreinfoModal" href="#" class="btn btn-primary">Learn More</a></p>
             </div>
         </div>
-    </div>
+    {{/if}}
     
 </div>
 
@@ -186,6 +194,13 @@
 
 <script>
     $(document).ready(function () {
+
+        $(".timestamp").each(function (i, elem) {
+            var date = new Date(parseInt($(elem).text()) * 1000).toString();
+
+            $(elem).text(date);
+        });
+
         var verifications = {{{json verifications}}};
 
         $.each (verifications, function (i, verificationLevel) {
