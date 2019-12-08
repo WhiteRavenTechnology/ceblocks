@@ -13,6 +13,7 @@ const test = {
         create_participant_missing_data: require("./entity/create_participant_missing_data"),
         create_participant: require("./entity/create_participant"),
         create_customer: require("./entity/create_customer"),
+        create_customer_participant_relationship: require("./entity/create_customer_participant_relationship")
     },
     transfer: {
         mint_points: require("./transfer/mint_points"),
@@ -109,7 +110,10 @@ ceblocks.client = {
     let customer = await ceblocks.getEntityObject({"entityId": result.requestTxnId});
 
 
+    // Assert customer/participant relationship created
+    result = await test.entity.create_customer_participant_relationship(ceblocks, {customerId: customer.id, participantId: participantNoMaxPointsPerRedemption.id});
 
+    assert.deepStrictEqual(result.actual, result.expected);
 
     // +++ TRANSFER TESTS +++ //
 

@@ -104,6 +104,29 @@ module.exports = {
 
         return output;
     },
+
+    createCustomerParticipantRelationship: async function (requestTxnId, parameters)
+    {
+        const inCustomerParticipantRelationship = parameters.customerParticipantRelationship;
+
+        const customer = await this.getEntityObject({entityId: inCustomerParticipantRelationship.customerId});
+
+        customer.participantIds.push(inCustomerParticipantRelationship.participantId);
+
+        const customerKey = `entity-${customer.id}`;
+
+        inCustomerParticipantRelationship.id = requestTxnId;
+
+        let output = {
+            "response": {
+                "type": "createCustomerParticipantRelationship",
+                "customerParticipantRelationship": inCustomerParticipantRelationship
+            },
+            [customerKey]: customer
+        }
+
+        return output;
+    },
     
     transferPoints: async function (requestTxnId, parameters)
     {
