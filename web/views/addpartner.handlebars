@@ -1,0 +1,79 @@
+<div class="mt-5 mx-auto">
+    <h1>Adding a Partner</h1>
+
+    <form class="form" method="post" autocomplete="off">
+        <p>
+            <label>Partner Name</label>
+            <input type="text" class="form-control" id="name" name="name"/>            
+        </p>
+
+        <p>
+            <label>Description</label>
+            <input type="text" class="form-control" id="description" name="description"/>            
+        </p>
+
+        <p>
+            <label>Website URL</label>
+            <input type="text" class="form-control" id="websiteURL" name="websiteURL"/>            
+        </p>
+
+        <p>
+            <label>Logo URL</label>
+            <input type="text" class="form-control" id="logoURL" name="logoURL"/>            
+        </p>
+
+        <p>
+            <label>Contact Email</label>
+            <input type="email" class="form-control" id="email" name="email"/>            
+        </p>
+
+        <p>
+            <label>Contact Phone</label>
+            <input type="tel" class="form-control" id="phone" name="phone"/>            
+        </p>
+
+
+        <p>
+            <label>Industries</label>
+        </p>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="legal" id="indLegal" name="industries[]">
+            <label class="form-check-label" for="indLegal">
+                Legal
+            </label>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="accounting" id="indCPA" name="industries[]">
+            <label class="form-check-label" for="indCPA">
+                CPA/Accounting
+            </label>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="banking" id="indBanking" name="industries[]">
+            <label class="form-check-label" for="indBanking">
+                Banking
+            </label>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="medical" id="indMedical" name="industries[]">
+            <label class="form-check-label" for="indMedical">
+                Medical
+            </label>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="mentalHealth" id="indMentalHealth" name="industries[]">
+            <label class="form-check-label" for="indMentalHealth">
+                Mental Health
+            </label>
+        </div>
+
+
+        <p>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </p>
+    </form>
+</div>
