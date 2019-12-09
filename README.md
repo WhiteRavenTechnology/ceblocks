@@ -18,7 +18,7 @@ Their customers earn **CEB Tokens** that can be redeemed with the original provi
 
 Providers benefit from increased customer loyalty (*note that CEB Tokens issued by **provider A** can never be spent on **provider B**, but CAN be spent in the marketplace*).
 
-Marketplace partners gain access to a highly tailored audience of cusomters.
+Marketplace partners gain access to a highly tailored audience of customers.
 
 All parties can rely on the solution because it is both **third-party managed** and **verified and secured** by Dragonchain blockchain technology.
 
