@@ -54,6 +54,73 @@ const helper = {
         }
     },
 
+    getPartners: async (client) => {
+        try {
+            const transactions = await client.queryTransactions({
+                transactionType: config.contractTxnType,
+                redisearchQuery: `@response_type:{createPartner}`,
+                limit: 999999
+            });
+
+            if (transactions.response.results)
+            {
+                return transactions.response.results.map(result => {return result.payload.response.entity});
+            } else 
+                return [];
+        } catch (exception)
+        {
+            // Pass back to caller to handle gracefully //
+            throw exception;
+        }
+    },
+
+    findPartnersInIndustries: async (client, options) => {
+        try {
+
+            const industryList = options.industries.split(",").join("|");
+
+            const transactions = await client.queryTransactions({
+                transactionType: config.contractTxnType,
+                redisearchQuery: `@response_type:{createPartner} @entity_industries:{${redisearchEncode(industryList)}}`
+            });
+
+            if (transactions.response.total > 0)
+            {
+                return transactions.response.results.map((e) => e.payload.response.entity);
+            } else 
+                throw `Partners not found with specified industries.`;
+
+
+        } catch (exception)
+        {
+            // Pass back to caller to handle gracefully //
+            throw exception;
+        }
+    },
+
+    createPartner: async (client, options) => {
+        try {
+            let payload = {
+                "method":"createPartner", 
+                "parameters":{
+                    "partner": options.partner
+                }
+            };
+
+            const requestTxn = await client.createTransaction({
+                transactionType: config.contractTxnType,
+                payload: payload
+            })
+
+            return requestTxn;
+
+        } catch (exception)
+        {
+            // Pass back to caller to handle gracefully //
+            throw exception;
+        }
+    },
+
     getParticipants: async (client) => {
         try {
             const transactions = await client.queryTransactions({

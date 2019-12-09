@@ -85,7 +85,7 @@ const main = async() => {
 		
 		const result = await rp(options);
 
-		await sleep(6);
+		await sleep(6000);
 
 		res.redirect(`/Provider/${result.response.transaction_id}`);
 	}));
@@ -120,9 +120,106 @@ const main = async() => {
 		
 		const result = await rp(options);
 
-		await sleep(6);
+		await sleep(6000);
 
 		res.redirect(`/Partner/${result.response.transaction_id}`);
+	}));
+
+	app.get('/Marketplace/Redeem', awaitHandlerFactory(async (req, res) => {	
+		const customerId = cryptojs.AES.decrypt(req.cookies.customerId, config.salt).toString(cryptojs.enc.Utf8);
+
+		const options = {
+			method: 'POST',
+			uri: `${config.apiURL}/redeem-marketplace/`,
+			headers: {
+				"Authorization": `Basic ${config.auth}`
+			},
+			body: {
+				redemption: {
+					"customerId": customerId,
+					"memo": "Redemption at marketplace partner Levenger",					
+					"points": 10
+				}
+			},
+			json: true 
+		};
+		
+		const result = await rp(options);
+
+		res.json({success: true});
+	}));
+
+	app.get('/Marketplace/', awaitHandlerFactory(async (req, res) => {	
+
+		const customerId = cryptojs.AES.decrypt(req.cookies.customerId, config.salt).toString(cryptojs.enc.Utf8);
+		
+		let options = {
+			method: 'GET',
+			uri: `${config.apiURL}/customers/details/${customerId}`,
+			headers: {
+				"Authorization": `Basic ${config.auth}`
+			},
+			json: true 
+		};
+		
+		const customer = await rp(options);
+
+		tokenBalance = customer.points;
+
+		let industriesAll = [];
+
+		for (var i=0; i < customer.participants.length; i++)
+		{
+			tokenBalance += customer.participants[i].points;
+
+			industriesAll = [...industriesAll, ...customer.participants[i].provider.industries.split(",")];
+		}
+
+		const industryList = [...new Set(industriesAll)].join(",");
+
+		options = {
+			method: 'GET',
+			uri: `${config.apiURL}/partners/industries/${industryList}`,
+			headers: {
+				"Authorization": `Basic ${config.auth}`
+			},
+			json: true 
+		};
+		
+		const partners = await rp(options);
+
+		for (var i=0; i<partners.length; i++)
+		{
+			if (partners[i].name == "Levenger")
+			{
+				partners[i].offers = [
+					{
+						"name": "$10 Off Writing Implements",						
+						"cost": 10,
+						"coupon": "LCEB001",
+						"imageURL": "https://www.levimage.com/image/Web/Product/Miscellaneous_Products/AP18015_CROSS_TOWNSEND_2020_YEAR_OF_THE_RAT_SE_ROLLERBALL_222.jpg",
+						"shopURL": "https://www.levenger.com/writing-8.aspx",
+						"disabled": tokenBalance < 10
+					}
+				]
+			}
+
+			if (partners[i].name == "mycase")
+			{
+				partners[i].offers = [
+					{
+						"name": "3 Months of MyCase for FREE",
+						"cost": 45,
+						"coupon": "MYC001",
+						"imageURL": "https://learn.mycase.com/www/v2/images/desktop/shared/pricing-2_720x491.png",
+						"shopURL": "https://mycase.com",
+						"disabled": tokenBalance < 45
+					}
+				]
+			}
+		}
+
+		res.render('marketplace', {title: "CEBlocks Partner Marketplace", customer: customer, tokenBalance: tokenBalance.toFixed(2), partners: partners});
 	}));
 
 	app.get('/Dashboard/', awaitHandlerFactory(async (req, res) => {	
@@ -156,7 +253,7 @@ const main = async() => {
 			
 		}
 
-		res.render('dashboard', {title: "CEBlocks Dashboard", customer: customer, tokenBalance: tokenBalance, creditRecords: creditRecords});
+		res.render('dashboard', {title: "CEBlocks Dashboard", customer: customer, tokenBalance: tokenBalance.toFixed(2), creditRecords: creditRecords});
 	}));
 
 	app.get('/Login/', awaitHandlerFactory(async (req, res) => {		
@@ -285,7 +382,7 @@ const main = async() => {
 	app.get('/Partner/:partnerId', awaitHandlerFactory(async (req, res) => {
 
 		const partner = await rp({
-			uri: `${config.apiURL}/partners/${req.params.providerId}`,
+			uri: `${config.apiURL}/partners/${req.params.partnerId}`,
 			headers: {
 				"Authorization": `Basic ${config.auth}`
 			},

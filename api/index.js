@@ -86,7 +86,7 @@ const main = async() => {
 	app.get('/partners', awaitHandlerFactory(async (req, res) => {
 		const client = await dcsdk.createClient();
 		
-		const partners = await helper.getpartners(client);
+		const partners = await helper.getPartners(client);
 
 		const partnerObjects = await Promise.all(partners.map(async p => {return await helper.getEntityObject(client, {entityId: p.id})}));
 
@@ -100,6 +100,17 @@ const main = async() => {
 		const partner = await helper.getEntityObject(client, {entityId: req.params.partnerId});
 
 		res.json(partner);
+    }));	
+    
+    // Get partners by industries //
+    app.get('/partners/industries/:industries', awaitHandlerFactory(async (req, res) => {
+		const client = await dcsdk.createClient();
+		
+		const partners = await helper.findPartnersInIndustries(client, {industries: req.params.industries});
+
+		const partnerObjects = await Promise.all(partners.map(async p => {return await helper.getEntityObject(client, {entityId: p.id})}));
+
+        res.json(partnerObjects);
 	}));	
 
 
@@ -109,7 +120,7 @@ const main = async() => {
 
 		let partner = req.body.partner;
 
-		const requestTxn = await helper.createpartner(client, {partner: partner});
+		const requestTxn = await helper.createPartner(client, {partner: partner});
 
 		res.json(requestTxn);
     }));
@@ -427,6 +438,66 @@ const main = async() => {
         });
 
 		res.json(requestTxn);
+    }));
+    
+    // REDEEM points (provider-controlled, burns points for participant) //
+	app.post('/redeem-marketplace', awaitHandlerFactory(async (req, res) => {
+		const client = await dcsdk.createClient();
+
+        // Get the customer object //
+        const customer = await helper.getEntityObject(client, {entityId: req.body.redemption.customerId});
+        
+        // Get the participant objects //
+        const participants = await Promise.all(customer.participantIds.map(async p => {return await helper.getEntityObject(client, {entityId: p})}));
+
+        let tokenBalance = customer.points;
+
+        let redeemingEntities = [{"entityId": customer.id, "pointsAvailable": customer.points}];
+
+		for (let i=0; i < participants.length; i++)
+		{
+            tokenBalance += participants[i].points;
+            redeemingEntities.push({"id": participants[i].id, "pointsAvailable": participants[i].points});
+        }
+        
+        // Should be points on the actual offer, not passed through request
+        if (tokenBalance < req.body.redemption.points)
+            throw "Insufficient balance.";
+
+        let pointsLeft = req.body.redemption.points;
+        let i = 0;
+        while (pointsLeft > 0)
+        {
+            entity = redeemingEntities[i];
+
+            if (entity.pointsAvailable <= 0)
+            {
+                i++;
+                continue;
+            }
+
+            let pointsToTransfer = 0;
+            if (entity.pointsAvailable > pointsLeft)
+                pointsToTransfer = pointsLeft;
+            else 
+                pointsToTransfer = entity.pointsAvailable;
+
+            await helper.transferPoints(client, {            
+                pointTransfer: {
+                    "fromEntityId": entity.id,
+                    "toEntityId": null, 
+                    "points": pointsToTransfer,
+                    "memo": req.body.redemption.memo
+                }
+            });
+
+            pointsLeft = pointsLeft - pointsToTransfer;
+            i++;            
+        }
+
+        await helper.sleep(6000);
+
+		res.json({success: true});
 	}));
     
 

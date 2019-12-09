@@ -5,7 +5,7 @@
         <h2 class="mb-3">CEB Token Balance: <b><span class="text-success">{{tokenBalance}}</span></b></h2>
 
         <p>
-            <a class="btn btn-primary btn-lg" href="#">Shop the Marketplace</a>&nbsp;&nbsp;&nbsp;
+            <a class="btn btn-primary btn-lg" href="/Marketplace" target="_blank">Shop the Marketplace</a>&nbsp;&nbsp;&nbsp;
             <a class="btn btn-info btn-lg" data-toggle="modal" data-target="#transfersModal" href="#">See Transaction History</a></p>
         </p>
 
@@ -16,20 +16,20 @@
 
         <table class="table">
             <thead class="thead-light">
-                <tr>
-                    <th scope="col">Provider</th>
-                    <th scope="col">Event Name</th>
-                    <th scope="col">Date Earned</th>                    
-                    <th scope="col"></th>
+                <tr class="row">
+                    <th class="col-3">Provider</th>
+                    <th class="col-6">Event Name</th>
+                    <th class="col-1">Date</th>                    
+                    <th class="col-2"></th>
                 </tr>
             </thead>
             <tbody>
                 {{#each creditRecords}}
-                    <tr>
-                        <td>{{this.providerName}}</td>
-                        <td>{{this.eventName}}</td>
-                        <td><span class="timestamp">{{this.timestampCreditEarned}}</span></td>                        
-                        <td>                            
+                    <tr class="row">
+                        <td class="col-3">{{{this.providerName}}}</td>
+                        <td class="col-6">{{{this.eventName}}}</td>
+                        <td class="col-1"><span class="timestamp">{{this.timestampCreditEarned}}</span></td>                        
+                        <td class="col-2 text-center">                            
                             <a href="/CreditRecord/{{this.id}}/?c=true" class="btn btn-info" target="_blank">View Record</a>                            
                         </td>
                     </tr>
