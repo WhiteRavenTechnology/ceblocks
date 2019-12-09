@@ -4,7 +4,7 @@
 
 After installing the smart contract to an L1, replace the contract ID in the `config.js` file.
 
-Then, with your dragonchain credentials file configured per the [Dragonchain SDK docs](https://node-sdk-docs.dragonchain.com/latest/index.html#configuration), initialize your contract with the following command (this will create the authority custodian for the contract):
+Then, with your dragonchain credentials file configured per the [Dragonchain SDK docs](https://node-sdk-docs.dragonchain.com/latest/index.html#configuration), initialize your contract with the following command:
 
 ```node initialize-contract.js```
 
