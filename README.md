@@ -72,5 +72,5 @@ Additionally, I've included a discussion of [next steps](/docs/nextSteps.md) for
 
 Thank you to my wife for your patience. :D
 
-Thank you to Dragonchain for the amazing platform, the amazing developers (Dean, Regan, Adam, Alex), and the chance to build something and remind myself why I love code.
+Thank you to Dragonchain for the amazing platform, the amazing developers (Dean, Regan, Adam, Alex, Roby), and the chance to build something and remind myself why I love code.
 
