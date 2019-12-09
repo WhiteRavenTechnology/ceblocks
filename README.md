@@ -2,6 +2,10 @@
 
 Submission for the December 2019 [Dragonchain](https://www.dragonchain.com) Hack-a-Thon
 
+# Submission Video
+
+[CEBlocks Demonstration Video] (https://www.youtube.com/watch)
+
 ## Project Overview
 
 **CEBlocks** is an accredited continuing education certificate authority, loyalty program, and marketplace solution in one.
