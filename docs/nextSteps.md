@@ -1,0 +1,26 @@
+# Next Steps for CEBlocks Development
+
+- Better/more complete authentication and permissioning
+- Revoke credit records (customer refunded, incorrect information)
+- DB backing for speed
+  - Postgresql interchain!!
+- More unit/integration test coverage (especially edge/failure cases)
+- Math/precision verification
+- Better accommodate different CE industries’ data formats
+- Email verification for customers/providers/partners
+- Import and Issue Credit
+  - Import credit records via excel/CSV
+- Billing
+  - Point Packs for discount
+  - Auto-bill for negative point balance at $0.05/point
+- Develop marketing services
+  - Email campaign support
+  - Social media marketing
+  - Social/search advertising/retargeting  
+- Finish Partner-side development 
+  - Register "offers" for redemption 
+  - Import/distribute list of unique coupon codes (built-in scarcity)
+- Documentation for API, integration guide for providers/partners
+- Add optional limit for "max points per redemption"
+- Timed point rewards
+  - Example: “Issue points 30 days after credit record creation if not revoked”

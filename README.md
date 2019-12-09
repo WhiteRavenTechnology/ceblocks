@@ -2,6 +2,8 @@
 
 Submission for the December 2019 [Dragonchain](https://www.dragonchain.com) Hack-a-Thon
 
+***Note: the code contained in this repository should NOT be considered production-ready***
+
 # Submission Video
 
 [CEBlocks Demonstration Video](https://www.youtube.com/watch)
@@ -30,6 +32,20 @@ The project is comprised of **three primary components**, all written in Node.js
 
 Documentation for each component is included in the README files in their respective directories.
 
+## Entities and Objects
+
+The following are the primary entities used in the system:
+
+- **Providers** represent continuing education providers
+- **Participants** represent provider-customer relationships (identified by "encrypted customer identifier" created by provider)
+- **Customers** represent learners who create a CEBlocks account and "claim" **participant** records
+- **Partners** represent marketplace goods and services sellers
+
+The following objects are also utilized:
+- **Credit Records** are created by a **provider** and identify the **participant** who earned continuing education credit
+- **Point Transfers** represent the minting, transfer, and burning of CEB Tokens
+- **API
+
 ## Dragonchain Technology
 
 The following features and tools in the Dragonchain ecosystem were utilized to implement this project:
@@ -45,12 +61,12 @@ No other database solution was necessary or implemented to complete this project
 
 ## Documentation
 
-- Smart Contract Notes
-- API Server Notes
-- Web Server Notes
-- Sample JSON Objects
+- [Smart Contract Notes](/smart-contract/README.md)
+- [API Server Notes](/api/README.md)
+- [Web Server Notes](/web/README.md)
+- [Sample JSON Objects](/docs/sampleObjects.md)
 
-Additionally, I've included a [journal](/docs/journal.md) of my time working on this project over the 4.5 days I put in.
+Additionally, I've included a discussion of [next steps](/docs/nextSteps.md) for CEBlocks and a [journal](/docs/journal.md) of my time working on this project over the 4.5 days of the hack-a-thon.
 
 ## Thanks
 

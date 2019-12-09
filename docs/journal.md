@@ -108,3 +108,10 @@ Day 4 (Sunday)
 Day 5 (Monday) - **SUBMISSION DAY**
 - Start: 7:30 AM (Stupid webcasts for work work...) 
 
+- What I got done:
+  1. Documentatioooonnnnnnnnn
+  2. Submitted!
+
+- General thoughts:
+  - Thank goodness this was only 5 days... :D
+  - Thank you Dragonchain
