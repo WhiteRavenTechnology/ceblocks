@@ -44,7 +44,7 @@ The following are the primary entities used in the system:
 The following objects are also utilized:
 - **Credit Records** are created by a **provider** and identify the **participant** who earned continuing education credit
 - **Point Transfers** represent the minting, transfer, and burning of CEB Tokens
-- **API
+- The **API Key Map** heap object maintains encrypted API keys
 
 ## Dragonchain Technology
 
