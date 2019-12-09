@@ -1,4 +1,4 @@
-# Day 1 (Thursday)
+## Day 1 (Thursday)
 
 - Start: 11:30 AM-ish (my time) - Finish: 11:30 PM (12 hours)
 
@@ -21,8 +21,8 @@
 
 
 
-Day 2 (Friday)
------------------
+## Day 2 (Friday)
+
 - Start: 10:45 AM - Finish: 4:45 PM (6 hours)
 
 - Start: 9:00 PM - Finish: 11:00 PM (2 hours)
@@ -53,8 +53,7 @@ Day 2 (Friday)
 
 
 
-Day 3 (Saturday)
------------------
+## Day 3 (Saturday)
 - Start: 12:00 PM - Finish: 4:30 PM (4.5 hours)
 
 - Start: 5:30 PM - Finish: 6:00 PM (.5 hours)
@@ -80,8 +79,7 @@ Day 3 (Saturday)
   
 
 
-Day 4 (Sunday)
------------------
+## Day 4 (Sunday)
 - Start: 10:45 AM - Finish: 5:00 PM (6.25 hours)
 
 - Start: 7:00 PM - Finish: 12:15 AM (5.25 hours)
@@ -105,7 +103,7 @@ Day 4 (Sunday)
   - What. An. Experience.
 
 
-Day 5 (Monday) - **SUBMISSION DAY**
+## Day 5 (Monday) - **SUBMISSION DAY**
 - Start: 7:30 AM (Stupid webcasts for work work...) 
 
 - What I got done:
