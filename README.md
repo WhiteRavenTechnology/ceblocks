@@ -37,3 +37,20 @@ The following features and tools in the Dragonchain ecosystem were utilized to i
 - Smart contract object heap to maintain stateful data
 
 No other database solution was necessary or implemented to complete this project.
+
+
+## Documentation
+
+- Smart Contract Notes
+- API Server Notes
+- Web Server Notes
+- Sample JSON Objects
+
+Additionally, I've included a [journal](/docs/journal.md) of my time working on this project over the 4.5 days I put in.
+
+## Thanks
+
+Thank you to my wife for your patience. :D
+
+Thank you to Dragonchain for the amazing platform, the amazing developers (Dean, Regan, Adam, Alex), and the chance to build something and remind myself why I love code.
+
