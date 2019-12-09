@@ -6,7 +6,7 @@ Submission for the December 2019 [Dragonchain](https://www.dragonchain.com) Hack
 
 # Submission Video
 
-[CEBlocks Demonstration Video](https://www.youtube.com/watch)
+[CEBlocks Demonstration Video](https://www.youtube.com/watch?v=q7B9LkVgH8s&feature=youtu.be)
 
 ## Project Overview
 
